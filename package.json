@@ -1,0 +1,18 @@
+{
+  "name": "node_totorial",
+  "version": "1.0.0",
+  "description": "node by Ramish",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ramish",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "lodash": "^4.17.21",
+    "mongoos": "^0.0.1-security",
+    "mongoose": "^8.19.3"
+  }
+}
