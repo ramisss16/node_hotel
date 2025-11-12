@@ -11,9 +11,11 @@ app.get('/', function (req, res) {    // run in browser - localhost:3000/
 
 // import the router files
 const personrouter = require('./routes/personRoutes')
+const menuItemrouter = require('./routes/menuItemRoutes')
 
 // use the ruotes
 app.use('/person' , personrouter);
+app.use('/menu' ,  menuItemrouter);
 
 app.listen(3000, () => {
   console.log('listening on port 3000')
