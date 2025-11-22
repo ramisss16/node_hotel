@@ -1,11 +1,15 @@
 const express = require('express');
 const app = express()   // import express
 const db = require('./db')
+require('dotenv').config();
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+
 const preson = require('./models/person')
+
+const PORT = process.env.PORT || 3000  // env me PORT ki value present ho use kro ya 3000
 
 app.get('/',function(req , res){    // run in browser - localhost:3000/
     res.send('hello sir welcome to my server!')
@@ -25,6 +29,8 @@ app.get('/developer', (req ,res) => {
     res.get(dev)
 })
 
-app.listen(3000, () =>{
+
+
+app.listen(PORT, () =>{
     console.log('listening on port 3000')
 }) // host number

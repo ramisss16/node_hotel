@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Person = require('./../models/person')
+const {jwtAuthMiddleware , generateToken}  = require('./../jwt')
 
 // Post router to add person
 
@@ -37,24 +38,82 @@ const Person = require('./../models/person')
 ////===> upper wale se hame callback kerror milta hai ham save use nhii krte ab 
 
 // POST route to add a Person
-router.post('/', async (req, res) => {
+router.post('/singup', async (req, res) => {
   try {
-    const data = req.body;
+    const data = req.body;   // Assuming the req body contain the data process
 
-    // create new person
+    // create new person documnet using the mongoose model
     const newPerson = new Person(data);
 
     // save to db
     const response = await newPerson.save();
     console.log('data saved');
 
-    res.status(200).json(response);
+    // print  id and username paylod
+    const payload = {
+      id: response.id,
+      username: response.username
+    }
+    console.log(JSON.stringify(payload))
+    
+    // get generate token
+    const token = generateToken(payload)
+    console.log("token is : ", token)
+
+    res.status(200).json({response:  response, token: token});
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: 'internal error' });
+    res.status(500).json({ error: 'internal  server error' });
   }
 });
+
+// routs login
+ router.post('/login' , async(req, res) =>{
+  try{
+    // extract username and pass from req body
+    const{username , password} = req.body;
+
+    // find the username by username
+    const user = await Person.findOne({username: username});
+
+    // if user doent not exist or pass doesnt match , return error
+    if(!user || !(await user.comparePassword(password))){
+      return res.status(401).json({error: 'Invalid Username or Passsword'})
+    }
+
+    // geretate token
+    const payload = {
+      id: user.id,
+      username: user.username
+    }
+    const token = generateToken(payload);
+
+    // return token as response
+    res.json({token})
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
+  }
+ }) 
+
+ // profile route  ---> isse ham token k through  user ka data access krte hai
+router.get('/profile' , jwtAuthMiddleware , async(req, res) => {
+  try{
+    const userData = req.user;
+    console.log("user Data: " , userData);
+
+    const userID = userData.id;
+    const user = await Person.findById(userID);
+
+    res.status(200).json({user});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Internal server Error'});
+  }
+}) 
 
 //  get method to get the person 
 router.get('/', async (req, res) => {
